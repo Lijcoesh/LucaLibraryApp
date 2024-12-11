@@ -1,6 +1,7 @@
 import React = require("react");
 import '../static/css/site.css'
 import { ApiData, FullFilled, Idle, Pending, Rejected } from "./dataLoaders";
+import { library } from "webpack";
 
 type Book = {
     id: number
@@ -9,6 +10,7 @@ type Book = {
     genre: string
     year: number
 }
+
 
 type BookProps = Exclude<keyof Book, "id"> //type BookProps =  "title" | "author" | "author" | "year"
 // See: https://www.typescriptlang.org/docs/handbook/2/keyof-types.html 
@@ -30,6 +32,12 @@ interface AppProps {
 
 const getAllBooks = async (): Promise<ApiData<Library>> => {
     const response = await fetch(`/api/Library/GetAll`)
+    if (!response.ok) return Rejected(await response.text())
+    return FullFilled(await response.json())
+}
+
+const getBookById = async (id: number): Promise<ApiData<Book>> => {
+    const response = await fetch(`/api/Library/GetBookById/${id}`)
     if (!response.ok) return Rejected(await response.text())
     return FullFilled(await response.json())
 }
